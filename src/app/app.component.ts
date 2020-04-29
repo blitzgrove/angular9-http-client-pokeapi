@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { PokemonApiService } from './pokemon-api.service';
+import { PokemonApiService } from './services/pokemon-api.service';
 
 @Component({
   selector: 'my-app',
@@ -11,11 +10,23 @@ import { PokemonApiService } from './pokemon-api.service';
 })
 export class AppComponent  {
   pokemons = [];
+  idForm: FormGroup;
 
-  constructor(private _pokemonApiService: PokemonApiService) {}
+  constructor(
+    private _formBuilder: FormBuilder,
+    private _pokemonApiService: PokemonApiService) {
+      this.createIdForm();
+    }
 
   ngOnInit(){
     this.getPokemonList();
+  }
+
+  private createIdForm() {
+    this.idForm = this._formBuilder.group({
+      start: ['1', [Validators.maxLength(4), Validators.min(1)]],
+      end: ''
+    })
   }
 
   private getPokemonList() {
@@ -30,6 +41,10 @@ export class AppComponent  {
       response => { this.pokemons = response; },
       error => { console.error(error); }
     );
+  }
+
+  onIdSubmit() {
+    console.log('submitted');
   }
 
 }
